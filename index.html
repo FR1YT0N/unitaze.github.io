@@ -584,7 +584,7 @@
                 <!-- Товары будут загружаться здесь -->
                 <div class="product-card">
                     <div class="admin-badge">Админ</div>
-                    <div class="product-image" style="background-image: url('img/photo11.jpg')"></div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
                     <div class="product-info">
                         <h3 class="product-title">Смеситель для раковины</h3>
                         <p>Современный дизайн, хромированное покрытие</p>
@@ -594,7 +594,7 @@
                 
                 <div class="product-card">
                     <div class="admin-badge">Админ</div>
-                    <div class="product-image" style="background-image: url('photo1.jpg.jpg')"></div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
                     <div class="product-info">
                         <h3 class="product-title">Унитаз компакт</h3>
                         <p>Белый, с микролифтом, бачок в комплекте</p>
@@ -705,209 +705,181 @@
     </div>
     
     <script>
-    // Хранение товаров - используем sessionStorage для демонстрации
-    // В реальном проекте нужно использовать серверную часть или Firebase
-    let products = JSON.parse(sessionStorage.getItem('products')) || [
-        {
-            name: "Смеситель для раковины",
-            description: "Современный дизайн, хромированное покрытие",
-            price: "2 499",
-            image: "https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-        },
-        {
-            name: "Унитаз компакт",
-            description: "Белый, с микролифтом, бачок в комплекте",
-            price: "8 990",
-            image: "https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-        }
-    ];
-    
-    let isAdmin = false;
-    
-    // Хеш пароля (sha256 от "admin123")
-    const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-    
-    // Функция для вычисления хеша SHA-256
-    async function sha256(message) {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex;
-    }
-    
-    // Функция для отображения товаров
-    function displayProducts() {
-        const productGrid = document.getElementById('productGrid');
-        productGrid.innerHTML = '';
+        // Хранение товаров в localStorage
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let isAdmin = false;
         
-        // Всегда показываем начальные товары + добавленные
-        const allProducts = [
-            ...products.filter(p => !p.isCustom),
-            ...products.filter(p => p.isCustom)
-        ];
+        // Хеш пароля (sha256 от "admin123")
+        const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
         
-        allProducts.forEach((product, index) => {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.innerHTML = `
-                ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
-                <div class="product-image" style="background-image: url('${product.image}')"></div>
-                <div class="product-info">
-                    <h3 class="product-title">${product.name}</h3>
-                    <p>${product.description}</p>
-                    <p class="product-price">${product.price} ₽</p>
-                    ${isAdmin ? `<button onclick="deleteProduct(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
-                </div>
-            `;
-            productGrid.appendChild(productCard);
-        });
-    }
-    
-    // Функция для удаления товара
-    function deleteProduct(index) {
-        if (!isAdmin) {
-            showNotification('Ошибка: Недостаточно прав', true);
-            return;
+        // Функция для вычисления хеша SHA-256
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
         }
         
-        products.splice(index, 1);
-        sessionStorage.setItem('products', JSON.stringify(products));
-        displayProducts();
-        showNotification('Товар удален');
-    }
-    
-    // Функция для показа уведомления
-    function showNotification(message, isError = false) {
-        const notification = document.getElementById('notification');
-        notification.querySelector('span').textContent = message;
-        notification.className = isError ? 'notification error show' : 'notification show';
-        notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
-    }
-    
-    // Функция для входа
-    async function login() {
-        const password = document.getElementById('adminPassword').value;
-        const hash = await sha256(password);
-        
-        if (hash === ADMIN_PASSWORD_HASH) {
-            isAdmin = true;
-            sessionStorage.setItem('isAdmin', 'true');
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('upload').style.display = 'block';
-            document.getElementById('adminLink').textContent = 'Админ';
-            displayProducts();
-            showNotification('Вы успешно вошли как администратор');
-        } else {
-            showNotification('Неверный пароль', true);
-        }
-    }
-    
-    // Функция для выхода
-    function logout() {
-        isAdmin = false;
-        sessionStorage.removeItem('isAdmin');
-        document.getElementById('upload').style.display = 'none';
-        document.getElementById('adminLink').textContent = 'Вход';
-        displayProducts();
-        showNotification('Вы вышли из системы');
-    }
-    
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Проверяем, авторизован ли пользователь
-        isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-        
-        if (isAdmin) {
-            document.getElementById('adminLink').textContent = 'Админ';
-        }
-        
-        // Загружаем товары из sessionStorage
-        const savedProducts = JSON.parse(sessionStorage.getItem('products'));
-        if (savedProducts && savedProducts.length > 0) {
-            products = savedProducts;
-        }
-        
-        displayProducts();
-        
-        // Обработка формы добавления товара
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Функция для отображения товаров
+        function displayProducts() {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = '';
             
+            products.forEach((product, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
+                    <div class="product-image" style="background-image: url('${product.image}')"></div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p>${product.description}</p>
+                        <p class="product-price">${product.price} ₽</p>
+                        ${isAdmin ? `<button onclick="deleteProduct(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
+            });
+        }
+        
+        // Функция для удаления товара
+        function deleteProduct(index) {
             if (!isAdmin) {
                 showNotification('Ошибка: Недостаточно прав', true);
                 return;
             }
             
-            const name = document.getElementById('productName').value;
-            const description = document.getElementById('productDescription').value;
-            const price = document.getElementById('productPrice').value;
-            const imageFile = document.getElementById('productImage').files[0];
+            products.splice(index, 1);
+            localStorage.setItem('products', JSON.stringify(products));
+            displayProducts();
+            showNotification('Товар удален');
+        }
+        
+        // Функция для показа уведомления
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.querySelector('span').textContent = message;
+            notification.className = isError ? 'notification error show' : 'notification show';
+            notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
             
-            if (!imageFile) {
-                showNotification('Пожалуйста, выберите изображение', true);
-                return;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Функция для входа
+        async function login() {
+            const password = document.getElementById('adminPassword').value;
+            const hash = await sha256(password);
+            
+            if (hash === ADMIN_PASSWORD_HASH) {
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('upload').style.display = 'block';
+                document.getElementById('adminLink').textContent = 'Админ';
+                displayProducts();
+                showNotification('Вы успешно вошли как администратор');
+            } else {
+                showNotification('Неверный пароль', true);
+            }
+        }
+        
+        // Функция для выхода
+        function logout() {
+            isAdmin = false;
+            localStorage.removeItem('isAdmin');
+            document.getElementById('upload').style.display = 'none';
+            document.getElementById('adminLink').textContent = 'Вход';
+            displayProducts();
+            showNotification('Вы вышли из системы');
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Проверяем, авторизован ли пользователь
+            isAdmin = localStorage.getItem('isAdmin') === 'true';
+            
+            if (isAdmin) {
+                document.getElementById('adminLink').textContent = 'Админ';
             }
             
-            // Чтение изображения как Data URL
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newProduct = {
-                    name: name,
-                    description: description,
-                    price: price,
-                    image: e.target.result,
-                    isCustom: true // Помечаем как пользовательский товар
+            displayProducts();
+            
+            // Обработка формы добавления товара
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!isAdmin) {
+                    showNotification('Ошибка: Недостаточно прав', true);
+                    return;
+                }
+                
+                const name = document.getElementById('productName').value;
+                const description = document.getElementById('productDescription').value;
+                const price = document.getElementById('productPrice').value;
+                const imageFile = document.getElementById('productImage').files[0];
+                
+                if (!imageFile) {
+                    showNotification('Пожалуйста, выберите изображение', true);
+                    return;
+                }
+                
+                // Чтение изображения как Data URL
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newProduct = {
+                        name: name,
+                        description: description,
+                        price: price,
+                        image: e.target.result
+                    };
+                    
+                    // Добавление нового товара
+                    products.push(newProduct);
+                    localStorage.setItem('products', JSON.stringify(products));
+                    
+                    // Обновление отображения
+                    displayProducts();
+                    
+                    // Показ уведомления
+                    showNotification('Товар успешно добавлен');
+                    
+                    // Сброс формы
+                    this.reset();
                 };
                 
-                // Добавление нового товара
-                products.push(newProduct);
-                sessionStorage.setItem('products', JSON.stringify(products));
-                
-                // Обновление отображения
-                displayProducts();
-                
-                // Показ уведомления
-                showNotification('Товар успешно добавлен');
-                
-                // Сброс формы
-                document.getElementById('uploadForm').reset();
-            };
+                reader.readAsDataURL(imageFile);
+            });
             
-            reader.readAsDataURL(imageFile);
-        });
-        
-        // Обработка кнопки входа
-        document.getElementById('adminLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (isAdmin) {
-                document.getElementById('upload').style.display = 'block';
-            } else {
-                document.getElementById('loginForm').style.display = 'block';
-            }
-        });
-        
-        // Обработка кнопки входа в форму
-        document.getElementById('loginButton').addEventListener('click', login);
-        
-        // Обработка кнопки выхода
-        document.getElementById('logoutButton').addEventListener('click', logout);
-        
-        // Закрытие форм при клике вне их
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
-                !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
-                if (!isAdmin) {
-                    document.getElementById('upload').style.display = 'none';
+            // Обработка кнопки входа
+            document.getElementById('adminLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isAdmin) {
+                    document.getElementById('upload').style.display = 'block';
+                } else {
+                    document.getElementById('loginForm').style.display = 'block';
                 }
-                document.getElementById('loginForm').style.display = 'none';
-            }
+            });
+            
+            // Обработка кнопки входа в форму
+            document.getElementById('loginButton').addEventListener('click', login);
+            
+            // Обработка кнопки выхода
+            document.getElementById('logoutButton').addEventListener('click', logout);
+            
+            // Закрытие форм при клике вне их
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
+                    !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
+                    if (!isAdmin) {
+                        document.getElementById('upload').style.display = 'none';
+                    }
+                    document.getElementById('loginForm').style.display = 'none';
+                }
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
