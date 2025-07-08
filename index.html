@@ -35,7 +35,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
         
         .header-content {
@@ -69,6 +69,9 @@
             font-weight: 500;
             transition: all 0.3s;
             padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         nav ul li a:hover {
@@ -88,6 +91,19 @@
         
         nav ul li a:hover::after {
             width: 100%;
+        }
+        
+        .cart-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
         
         /* Главный баннер */
@@ -172,6 +188,8 @@
             transition: all 0.3s ease;
             border: 1px solid #e2e8f0;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         
         .product-card:hover {
@@ -189,6 +207,9 @@
         
         .product-info {
             padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .product-title {
@@ -204,6 +225,54 @@
             margin-top: 15px;
         }
         
+        .product-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-grow: 1;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
         .admin-badge {
             position: absolute;
             top: 10px;
@@ -214,7 +283,6 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
-            display: none;
         }
         
         /* Форма загрузки фотографий */
@@ -482,6 +550,93 @@
             background: #ef4444;
         }
         
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        
+        /* Корзина */
+        .cart-items {
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        
+        .cart-item-remove {
+            color: #ef4444;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        
+        .cart-total {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
         /* Анимации */
         @keyframes fadeInDown {
             from {
@@ -548,6 +703,36 @@
             footer {
                 clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
             }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -562,6 +747,7 @@
                     <li><a href="#products">Каталог</a></li>
                     <li><a href="#contacts">Контакты</a></li>
                     <li><a href="#about">О нас</a></li>
+                    <li><a href="#" id="cartLink"><i class="fas fa-shopping-cart"></i> <span id="cartCount" class="cart-count" style="display: none;">0</span></a></li>
                     <li><a href="#" id="adminLink">Вход</a></li>
                 </ul>
             </nav>
@@ -589,6 +775,11 @@
                         <h3 class="product-title">Смеситель для раковины</h3>
                         <p>Современный дизайн, хромированное покрытие</p>
                         <p class="product-price">2 499 ₽</p>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart(0)">
+                                <i class="fas fa-cart-plus"></i> В корзину
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -599,6 +790,11 @@
                         <h3 class="product-title">Унитаз компакт</h3>
                         <p>Белый, с микролифтом, бачок в комплекте</p>
                         <p class="product-price">8 990 ₽</p>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart(1)">
+                                <i class="fas fa-cart-plus"></i> В корзину
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -610,6 +806,7 @@
         <div class="container">
             <h2 class="upload-title">Панель администратора</h2>
             <form id="uploadForm" class="upload-form">
+                <input type="hidden" id="productId">
                 <div class="form-group">
                     <label for="productName">Название товара</label>
                     <input type="text" id="productName" required placeholder="Например: Смеситель для ванны">
@@ -627,10 +824,12 @@
                 
                 <div class="form-group">
                     <label for="productImage">Фотография товара</label>
-                    <input type="file" id="productImage" accept="image/*" required>
+                    <input type="file" id="productImage" accept="image/*">
+                    <small>Оставьте пустым, чтобы сохранить текущее изображение</small>
                 </div>
                 
-                <button type="submit" class="upload-button">Добавить товар</button>
+                <button type="submit" class="upload-button" id="submitProductBtn">Добавить товар</button>
+                <button type="button" id="cancelEditBtn" class="upload-button" style="background: linear-gradient(to right, #f59e0b, #d97706); display: none;">Отменить редактирование</button>
                 <button type="button" id="logoutButton" class="upload-button" style="background: linear-gradient(to right, #ef4444, #dc2626);">Выйти</button>
             </form>
         </div>
@@ -698,6 +897,22 @@
         </div>
     </footer>
     
+    <!-- Модальное окно корзины -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('cartModal')">&times;</span>
+            <h2>Ваша корзина</h2>
+            <div class="cart-items" id="cartItems">
+                <!-- Товары в корзине будут здесь -->
+                <p id="emptyCartMessage">Ваша корзина пуста</p>
+            </div>
+            <div class="cart-total" id="cartTotal" style="display: none;">
+                Итого: <span id="totalAmount">0</span> ₽
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 20px; display: none;" id="checkoutBtn">Оформить заказ</button>
+        </div>
+    </div>
+    
     <!-- Уведомление -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>
@@ -706,8 +921,28 @@
     
     <script>
         // Хранение товаров в localStorage
-        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            {
+                id: 0,
+                name: "Смеситель для раковины",
+                description: "Современный дизайн, хромированное покрытие",
+                price: "2 499",
+                image: "https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            },
+            {
+                id: 1,
+                name: "Унитаз компакт",
+                description: "Белый, с микролифтом, бачок в комплекте",
+                price: "8 990",
+                image: "https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }
+        ];
+        
+        // Корзина
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let isAdmin = false;
+        let isEditing = false;
+        let currentEditId = null;
         
         // Хеш пароля (sha256 от "admin123")
         const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
@@ -736,150 +971,27 @@
                         <h3 class="product-title">${product.name}</h3>
                         <p>${product.description}</p>
                         <p class="product-price">${product.price} ₽</p>
-                        ${isAdmin ? `<button onclick="deleteProduct(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                <i class="fas fa-cart-plus"></i> В корзину
+                            </button>
+                            ${isAdmin ? `
+                                <button class="btn btn-warning" onclick="editProduct(${product.id})">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
+                                    <i class="fas fa-trash"></i> Удалить
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
                 productGrid.appendChild(productCard);
             });
+            
+            updateCartCount();
         }
         
-        // Функция для удаления товара
-        function deleteProduct(index) {
-            if (!isAdmin) {
-                showNotification('Ошибка: Недостаточно прав', true);
-                return;
-            }
-            
-            products.splice(index, 1);
-            localStorage.setItem('products', JSON.stringify(products));
-            displayProducts();
-            showNotification('Товар удален');
-        }
-        
-        // Функция для показа уведомления
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            notification.querySelector('span').textContent = message;
-            notification.className = isError ? 'notification error show' : 'notification show';
-            notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Функция для входа
-        async function login() {
-            const password = document.getElementById('adminPassword').value;
-            const hash = await sha256(password);
-            
-            if (hash === ADMIN_PASSWORD_HASH) {
-                isAdmin = true;
-                localStorage.setItem('isAdmin', 'true');
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('upload').style.display = 'block';
-                document.getElementById('adminLink').textContent = 'Админ';
-                displayProducts();
-                showNotification('Вы успешно вошли как администратор');
-            } else {
-                showNotification('Неверный пароль', true);
-            }
-        }
-        
-        // Функция для выхода
-        function logout() {
-            isAdmin = false;
-            localStorage.removeItem('isAdmin');
-            document.getElementById('upload').style.display = 'none';
-            document.getElementById('adminLink').textContent = 'Вход';
-            displayProducts();
-            showNotification('Вы вышли из системы');
-        }
-        
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Проверяем, авторизован ли пользователь
-            isAdmin = localStorage.getItem('isAdmin') === 'true';
-            
-            if (isAdmin) {
-                document.getElementById('adminLink').textContent = 'Админ';
-            }
-            
-            displayProducts();
-            
-            // Обработка формы добавления товара
-            document.getElementById('uploadForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                if (!isAdmin) {
-                    showNotification('Ошибка: Недостаточно прав', true);
-                    return;
-                }
-                
-                const name = document.getElementById('productName').value;
-                const description = document.getElementById('productDescription').value;
-                const price = document.getElementById('productPrice').value;
-                const imageFile = document.getElementById('productImage').files[0];
-                
-                if (!imageFile) {
-                    showNotification('Пожалуйста, выберите изображение', true);
-                    return;
-                }
-                
-                // Чтение изображения как Data URL
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const newProduct = {
-                        name: name,
-                        description: description,
-                        price: price,
-                        image: e.target.result
-                    };
-                    
-                    // Добавление нового товара
-                    products.push(newProduct);
-                    localStorage.setItem('products', JSON.stringify(products));
-                    
-                    // Обновление отображения
-                    displayProducts();
-                    
-                    // Показ уведомления
-                    showNotification('Товар успешно добавлен');
-                    
-                    // Сброс формы
-                    this.reset();
-                };
-                
-                reader.readAsDataURL(imageFile);
-            });
-            
-            // Обработка кнопки входа
-            document.getElementById('adminLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (isAdmin) {
-                    document.getElementById('upload').style.display = 'block';
-                } else {
-                    document.getElementById('loginForm').style.display = 'block';
-                }
-            });
-            
-            // Обработка кнопки входа в форму
-            document.getElementById('loginButton').addEventListener('click', login);
-            
-            // Обработка кнопки выхода
-            document.getElementById('logoutButton').addEventListener('click', logout);
-            
-            // Закрытие форм при клике вне их
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
-                    !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
-                    if (!isAdmin) {
-                        document.getElementById('upload').style.display = 'none';
-                    }
-                    document.getElementById('loginForm').style.display = 'none';
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+        // Функция для добавления товара в корзину
+        function addToCart(productId) {
+           
