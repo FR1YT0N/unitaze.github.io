@@ -9,996 +9,87 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        /* Базовые стили */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
-            background-image: url('https://images.unsplash.com/photo-1600585152220-90363fe7e115?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
-            background-attachment: fixed;
-            background-size: cover;
-            background-position: center;
-            background-blend-mode: overlay;
-            background-color: rgba(248, 250, 252, 0.9);
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        /* Шапка сайта */
-        header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            background: linear-gradient(to right, #ffffff, #e0f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-        
-        nav ul li {
-            margin-left: 25px;
-            position: relative;
-        }
-        
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            padding: 5px 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        nav ul li a:hover {
-            color: #bfdbfe;
-        }
-        
-        nav ul li a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #bfdbfe;
-            transition: width 0.3s;
-        }
-        
-        nav ul li a:hover::after {
-            width: 100%;
-        }
-        
-        .cart-count {
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        /* Главный баннер */
-        .hero {
-            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), 
-                        url('https://images.unsplash.com/photo-1600585152220-90363fe7e115?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
-            background-size: cover;
-            background-position: center;
-            padding: 120px 0;
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-            position: relative;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: white;
-            position: relative;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            animation: fadeInDown 1s ease;
-        }
-        
-        .hero p {
-            font-size: 20px;
-            max-width: 700px;
-            margin: 0 auto;
-            position: relative;
-            color: #e0f2fe;
-            animation: fadeInUp 1s ease;
-        }
-        
-        /* Поиск и фильтры */
-        .search-section {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin: 20px auto 40px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .search-input {
-            flex-grow: 1;
-            padding: 12px 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-        
-        .filter-select {
-            padding: 12px 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-            background: white;
-            cursor: pointer;
-        }
-        
-        /* Каталог товаров */
-        .products {
-            padding: 80px 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="%23e0f2fe" opacity="0.2" d="M0,0 L100,0 L100,100 Q50,80 0,100"></path></svg>') no-repeat bottom/100% 50px, linear-gradient(to bottom, #ffffff, #f8fafc);
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 32px;
-            color: #1e3a8a;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(to right, #1e3a8a, #3b82f6);
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .product-image {
-            height: 220px;
-            background-color: #e2e8f0;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-        
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ef4444;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .product-info {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .product-title {
-            font-size: 20px;
-            margin-bottom: 12px;
-            color: #1e3a8a;
-        }
-        
-        .product-description {
-            color: #64748b;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        .product-price {
-            font-weight: bold;
-            color: #2563eb;
-            font-size: 22px;
-            margin-top: 15px;
-        }
-        
-        .old-price {
-            text-decoration: line-through;
-            color: #94a3b8;
-            font-size: 16px;
-            margin-left: 10px;
-        }
-        
-        .product-actions {
-            margin-top: auto;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            flex-grow: 1;
-        }
-        
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #1e40af;
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #d97706;
-        }
-        
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #059669;
-        }
-        
-        .admin-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #2563eb;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        /* Слайдер популярных товаров */
-        .popular-slider {
-            margin: 60px 0;
-            position: relative;
-        }
-        
-        .slider-container {
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .slider-track {
-            display: flex;
-            transition: transform 0.5s ease;
-        }
-        
-        .slider-item {
-            min-width: 280px;
-            padding: 0 15px;
-        }
-        
-        .slider-nav {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        
-        .slider-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .slider-dot.active {
-            background: #2563eb;
-            transform: scale(1.2);
-        }
-        
-        /* Форма загрузки фотографий */
-        .upload-section {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin: 60px auto;
-            max-width: 600px;
-            border: 1px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .upload-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, #2563eb, #1e3a8a);
-        }
-        
-        .upload-title {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #1e3a8a;
-            font-size: 24px;
-        }
-        
-        .upload-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .form-group label {
-            font-weight: 500;
-            color: #1e3a8a;
-        }
-        
-        .form-group input, 
-        .form-group textarea,
-        .form-group select {
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus, 
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-        
-        .upload-button {
-            background: linear-gradient(to right, #2563eb, #1e40af);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .upload-button:hover {
-            background: linear-gradient(to right, #1e40af, #1e3a8a);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Форма входа */
-        .login-form {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin: 60px auto;
-            max-width: 400px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        
-        .login-form h2 {
-            color: #1e3a8a;
-            margin-bottom: 20px;
-        }
-        
-        .login-form input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .login-button {
-            background: linear-gradient(to right, #2563eb, #1e40af);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
-        
-        .login-button:hover {
-            background: linear-gradient(to right, #1e40af, #1e3a8a);
-            transform: translateY(-2px);
-        }
-        
-        /* Контакты */
-        .contacts {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-            clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
-        }
-        
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        .contact-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        
-        .contact-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .contact-card i {
-            font-size: 40px;
-            color: #2563eb;
-            margin-bottom: 15px;
-        }
-        
-        .contact-card h3 {
-            color: #1e3a8a;
-            margin-bottom: 15px;
-            font-size: 20px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-        
-        .contact-card h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 2px;
-            background: #2563eb;
-        }
-        
-        /* О компании */
-        .about {
-            padding: 80px 0;
-            background: white;
-        }
-        
-        .about p {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 30px;
-            font-size: 18px;
-            line-height: 1.8;
-            color: #334155;
-        }
-        
-        /* Отзывы */
-        .reviews {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 100%);
-        }
-        
-        .review-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .review-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .review-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .review-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #e0f2fe;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            color: #1e3a8a;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
-        .review-name {
-            font-weight: 600;
-            color: #1e3a8a;
-        }
-        
-        .review-date {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-        
-        .review-rating {
-            color: #f59e0b;
-            margin-bottom: 10px;
-        }
-        
-        .review-text {
-            color: #334155;
-            line-height: 1.6;
-        }
-        
-        /* Подвал */
-        footer {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            color: white;
-            padding: 50px 0;
-            text-align: center;
-            clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
-            margin-top: 60px;
-        }
-        
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .footer-content p {
-            margin-bottom: 20px;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .social-links a {
-            color: white;
-            font-size: 24px;
-            transition: all 0.3s;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .social-links a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        /* Уведомления */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #10b981;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            transform: translateX(200%);
-            transition: transform 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.error {
-            background: #ef4444;
-        }
-        
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: fadeInUp 0.3s;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #64748b;
-            transition: all 0.3s;
-        }
-        
-        .close-modal:hover {
-            color: #1e3a8a;
-            transform: rotate(90deg);
-        }
-        
-        /* Корзина */
-        .cart-items {
-            margin-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }
-        
-        .cart-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .cart-item-image {
-            width: 60px;
-            height: 60px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            margin-right: 15px;
-        }
-        
-        .cart-item-details {
-            flex-grow: 1;
-        }
-        
-        .cart-item-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        
-        .cart-item-price {
-            color: #2563eb;
-            font-weight: bold;
-        }
-        
-        .cart-item-quantity {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-        }
-        
-        .quantity-btn {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .quantity-btn:hover {
-            background: #cbd5e1;
-        }
-        
-        .cart-item-remove {
-            color: #ef4444;
-            cursor: pointer;
-            margin-left: 15px;
-            font-size: 20px;
-            transition: all 0.3s;
-        }
-        
-        .cart-item-remove:hover {
-            transform: scale(1.2);
-        }
-        
-        .cart-total {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: right;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        /* Форма заказа */
-        .order-form {
-            margin-top: 20px;
-        }
-        
-        .form-row {
-            margin-bottom: 15px;
-        }
-        
-        .form-row label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #1e3a8a;
-        }
-        
-        .form-row input,
-        .form-row textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        /* Анимации */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Адаптивность */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { line-height: 1.6; color: #333; background-color: #f8fafc; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        
+        /* Header */
+        header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 20px 0; 
+                position: sticky; top: 0; z-index: 1000; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: 1px; color: white; }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 25px; }
+        nav ul li a { color: white; text-decoration: none; font-weight: 500; transition: all 0.3s; }
+        nav ul li a:hover { color: #bfdbfe; }
+        .cart-count { background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; 
+                     display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+        
+        /* Hero */
+        .hero { background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)); 
+                padding: 120px 0; text-align: center; color: white; }
+        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero p { font-size: 20px; max-width: 700px; margin: 0 auto; color: #e0f2fe; }
+        
+        /* Products */
+        .products { padding: 80px 0; background: white; }
+        .section-title { text-align: center; margin-bottom: 40px; font-size: 32px; color: #1e3a8a; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+                       transition: all 0.3s; border: 1px solid #e2e8f0; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .product-image { height: 220px; background-size: cover; background-position: center; }
+        .discount-badge { position: absolute; top: 10px; left: 10px; background: #ef4444; color: white; 
+                          padding: 5px 10px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        .product-info { padding: 20px; }
+        .product-title { font-size: 20px; margin-bottom: 12px; color: #1e3a8a; }
+        .product-price { font-weight: bold; color: #2563eb; font-size: 22px; }
+        .old-price { text-decoration: line-through; color: #94a3b8; font-size: 16px; margin-left: 10px; }
+        .product-actions { margin-top: 15px; display: flex; gap: 10px; }
+        .btn { padding: 8px 12px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1e40af; }
+        
+        /* Admin */
+        .upload-section { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+                          margin: 30px auto; max-width: 600px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; 
+                                                                     border-radius: 5px; }
+        
+        /* Reviews */
+        .reviews { padding: 80px 0; background: #f8fafc; }
+        .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .review-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Contacts */
+        .contacts { padding: 80px 0; background: white; }
+        .contact-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .contact-card { background: #f8fafc; padding: 20px; border-radius: 8px; text-align: center; }
+        
+        /* Footer */
+        footer { background: #1e3a8a; color: white; padding: 40px 0; text-align: center; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                 background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; }
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            
-            nav ul {
-                margin-top: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-            
-            nav ul li {
-                margin: 0;
-            }
-            
-            .hero {
-                padding: 80px 0;
-                clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-            
-            .hero p {
-                font-size: 18px;
-            }
-            
-            .section-title {
-                font-size: 28px;
-            }
-            
-            .contacts {
-                clip-path: polygon(0 0, 100% 3%, 100% 100%, 0 97%);
-            }
-            
-            footer {
-                clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
-            }
-            
-            .product-actions {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 28px;
-            }
-            
-            .hero p {
-                font-size: 16px;
-            }
-            
-            .section-title {
-                font-size: 24px;
-            }
-            
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .contact-info {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-section {
-                flex-direction: column;
-            }
+            .header-content { flex-direction: column; }
+            nav ul { margin-top: 15px; }
+            nav ul li { margin: 0 10px; }
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 18px; }
         }
     </style>
 </head>
 <body>
-    <!-- Шапка сайта -->
+    <!-- Header -->
     <header>
         <div class="container header-content">
             <div class="logo">Сантехник</div>
@@ -1016,7 +107,7 @@
         </div>
     </header>
     
-    <!-- Главный баннер -->
+    <!-- Hero -->
     <section class="hero" id="home">
         <div class="container">
             <h1>"Сантехник"</h1>
@@ -1024,64 +115,75 @@
         </div>
     </section>
     
-    <!-- Поиск и фильтры -->
-    <div class="container">
-        <div class="search-section">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск товаров...">
-            <select id="categoryFilter" class="filter-select">
-                <option value="">Все категории</option>
-                <option value="Смесители">Смесители</option>
-                <option value="Унитазы">Унитазы</option>
-                <option value="Ванны">Ванны</option>
-                <option value="Душевые">Душевые</option>
-                <option value="Аксессуары">Аксессуары</option>
-            </select>
-            <select id="priceFilter" class="filter-select">
-                <option value="">Любая цена</option>
-                <option value="0-5000">До 5 000 ₽</option>
-                <option value="5000-15000">5 000 - 15 000 ₽</option>
-                <option value="15000-30000">15 000 - 30 000 ₽</option>
-                <option value="30000">От 30 000 ₽</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- Слайдер популярных товаров -->
-    <section class="popular-slider">
-        <div class="container">
-            <h2 class="section-title">Популярные товары</h2>
-            <div class="slider-container">
-                <div class="slider-track" id="sliderTrack"></div>
-            </div>
-            <div class="slider-nav" id="sliderNav"></div>
-        </div>
-    </section>
-    
-    <!-- Каталог товаров -->
+    <!-- Products -->
     <section class="products" id="products">
         <div class="container">
             <h2 class="section-title">Наш каталог</h2>
-            <div class="product-grid" id="productGrid">
-                <!-- Товары будут загружаться здесь -->
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </section>
+    
+    <!-- Reviews -->
+    <section class="reviews" id="reviews">
+        <div class="container">
+            <h2 class="section-title">Отзывы</h2>
+            <div class="review-grid" id="reviewGrid"></div>
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="addReviewBtn" class="btn btn-primary">Добавить отзыв</button>
             </div>
         </div>
     </section>
     
-    <!-- Форма загрузки фотографий (скрыта по умолчанию) -->
+    <!-- About -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">О нас</h2>
+            <p>Мы - магазин "Сантехник", работаем на рынке с 2010 года. Наша компания предлагает широкий ассортимент сантехнического оборудования от ведущих производителей по доступным ценам. Мы гарантируем качество продукции и профессиональное обслуживание.</p>
+        </div>
+    </section>
+    
+    <!-- Contacts -->
+    <section class="contacts" id="contacts">
+        <div class="container">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Адрес</h3>
+                    <p>г. Москва, ул. Примерная, д. 123</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-phone"></i>
+                    <h3>Телефон</h3>
+                    <p>+7 (123) 456-78-90</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>info@santehnik.ru</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Часы работы</h3>
+                    <p>Пн-Пт: 9:00 - 20:00<br>Сб-Вс: 10:00 - 18:00</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Admin Panel (hidden by default) -->
     <section class="upload-section" id="upload" style="display: none;">
         <div class="container">
-            <h2 class="upload-title">Панель администратора</h2>
-            <form id="uploadForm" class="upload-form">
+            <h2 class="section-title">Панель администратора</h2>
+            <form id="uploadForm">
                 <input type="hidden" id="productId">
                 <div class="form-group">
                     <label for="productName">Название товара</label>
-                    <input type="text" id="productName" required placeholder="Например: Смеситель для ванны">
+                    <input type="text" id="productName" required>
                 </div>
-                
                 <div class="form-group">
                     <label for="productCategory">Категория</label>
                     <select id="productCategory" required>
-                        <option value="">Выберите категорию</option>
                         <option value="Смесители">Смесители</option>
                         <option value="Унитазы">Унитазы</option>
                         <option value="Ванны">Ванны</option>
@@ -1089,24 +191,398 @@
                         <option value="Аксессуары">Аксессуары</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label for="productDescription">Описание товара</label>
-                    <textarea id="productDescription" rows="3" required placeholder="Опишите характеристики товара"></textarea>
+                    <label for="productDescription">Описание</label>
+                    <textarea id="productDescription" required></textarea>
                 </div>
-                
                 <div class="form-group">
                     <label for="productPrice">Цена (₽)</label>
-                    <input type="number" id="productPrice" required placeholder="Например: 3499">
+                    <input type="number" id="productPrice" required>
                 </div>
-                
                 <div class="form-group">
-                    <label for="productOldPrice">Старая цена (₽, необязательно)</label>
-                    <input type="number" id="productOldPrice" placeholder="Например: 4999">
+                    <label for="productOldPrice">Старая цена (₽)</label>
+                    <input type="number" id="productOldPrice">
                 </div>
-                
                 <div class="form-group">
-                    <label for="productImage">Фотография товара</label>
-                    <input type="file" id="productImage" accept="image/*">
-                    <small>Оставьте пустым, чтобы сохранить текущее изображение</small>
-                </
+                    <label for="productImage">Изображение (URL)</label>
+                    <input type="text" id="productImage" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" id="cancelEdit" class="btn" style="margin-left: 10px;">Отмена</button>
+            </form>
+            <div id="adminProducts" style="margin-top: 30px;"></div>
+        </div>
+    </section>
+    
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Вход для администратора</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Review Modal -->
+    <div class="modal" id="reviewModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Добавить отзыв</h2>
+            <form id="newReviewForm">
+                <div class="form-group">
+                    <label for="reviewName">Ваше имя</label>
+                    <input type="text" id="reviewName" required>
+                </div>
+                <div class="form-group">
+                    <label for="reviewText">Текст отзыва</label>
+                    <textarea id="reviewText" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reviewRating">Оценка</label>
+                    <select id="reviewRating" required>
+                        <option value="5">★★★★★</option>
+                        <option value="4">★★★★☆</option>
+                        <option value="3">★★★☆☆</option>
+                        <option value="2">★★☆☆☆</option>
+                        <option value="1">★☆☆☆☆</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
+            authDomain: "santehnik-store.firebaseapp.com",
+            databaseURL: "https://santehnik-store.firebaseio.com",
+            projectId: "santehnik-store",
+            storageBucket: "santehnik-store.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123abc123abc123abc1"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        
+        // DOM elements
+        const adminLink = document.getElementById('adminLink');
+        const uploadSection = document.getElementById('upload');
+        const loginModal = document.getElementById('loginModal');
+        const reviewModal = document.getElementById('reviewModal');
+        const addReviewBtn = document.getElementById('addReviewBtn');
+        
+        // Check auth state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                adminLink.textContent = 'Выйти';
+                uploadSection.style.display = 'block';
+                loadAdminProducts();
+            } else {
+                // User is signed out
+                adminLink.textContent = 'Вход';
+                uploadSection.style.display = 'none';
+            }
+        });
+        
+        // Admin login/logout
+        adminLink.addEventListener('click', e => {
+            e.preventDefault();
+            if (auth.currentUser) {
+                auth.signOut();
+            } else {
+                loginModal.style.display = 'flex';
+            }
+        });
+        
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    loginModal.style.display = 'none';
+                    showNotification('Вы успешно вошли!');
+                })
+                .catch(error => {
+                    showNotification('Ошибка входа: ' + error.message, true);
+                });
+        });
+        
+        // Close modals
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+                reviewModal.style.display = 'none';
+            });
+        });
+        
+        // Add review button
+        addReviewBtn.addEventListener('click', () => {
+            reviewModal.style.display = 'flex';
+        });
+        
+        // Submit review
+        document.getElementById('newReviewForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const review = {
+                name: document.getElementById('reviewName').value,
+                text: document.getElementById('reviewText').value,
+                rating: document.getElementById('reviewRating').value,
+                date: new Date().toLocaleDateString()
+            };
+            
+            database.ref('reviews').push(review)
+                .then(() => {
+                    showNotification('Отзыв добавлен!');
+                    reviewModal.style.display = 'none';
+                    loadReviews();
+                });
+        });
+        
+        // Product form
+        document.getElementById('uploadForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const product = {
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value,
+                price: document.getElementById('productPrice').value,
+                oldPrice: document.getElementById('productOldPrice').value || null,
+                image: document.getElementById('productImage').value
+            };
+            
+            const productId = document.getElementById('productId').value;
+            
+            if (productId) {
+                // Update existing product
+                database.ref('products/' + productId).update(product)
+                    .then(() => {
+                        showNotification('Товар обновлен!');
+                        resetForm();
+                        loadAdminProducts();
+                        loadProducts();
+                    });
+            } else {
+                // Add new product
+                database.ref('products').push(product)
+                    .then(() => {
+                        showNotification('Товар добавлен!');
+                        resetForm();
+                        loadAdminProducts();
+                        loadProducts();
+                    });
+            }
+        });
+        
+        // Cancel edit
+        document.getElementById('cancelEdit').addEventListener('click', resetForm);
+        
+        // Load products for customers
+        function loadProducts() {
+            database.ref('products').once('value', snapshot => {
+                const products = snapshot.val();
+                const productGrid = document.getElementById('productGrid');
+                productGrid.innerHTML = '';
+                
+                for (const id in products) {
+                    const product = products[id];
+                    productGrid.innerHTML += `
+                        <div class="product-card">
+                            <div class="product-image" style="background-image: url('${product.image}')">
+                                ${product.oldPrice ? `<span class="discount-badge">Скидка</span>` : ''}
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">${product.name}</h3>
+                                <p>${product.description}</p>
+                                <div style="margin-top: 15px;">
+                                    <span class="product-price">${product.price} ₽</span>
+                                    ${product.oldPrice ? `<span class="old-price">${product.oldPrice} ₽</span>` : ''}
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-primary" onclick="addToCart('${id}')">
+                                        <i class="fas fa-cart-plus"></i> В корзину
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        // Load products for admin
+        function loadAdminProducts() {
+            database.ref('products').once('value', snapshot => {
+                const products = snapshot.val();
+                const adminProducts = document.getElementById('adminProducts');
+                adminProducts.innerHTML = '<h3>Товары в каталоге</h3>';
+                
+                for (const id in products) {
+                    const product = products[id];
+                    adminProducts.innerHTML += `
+                        <div style="padding: 15px; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 5px;">
+                            <h4>${product.name} (${product.price} ₽)</h4>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button onclick="editProduct('${id}')" class="btn btn-primary">Редактировать</button>
+                                <button onclick="deleteProduct('${id}')" class="btn btn-danger">Удалить</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        // Load reviews
+        function loadReviews() {
+            database.ref('reviews').once('value', snapshot => {
+                const reviews = snapshot.val();
+                const reviewGrid = document.getElementById('reviewGrid');
+                reviewGrid.innerHTML = '';
+                
+                for (const id in reviews) {
+                    const review = reviews[id];
+                    reviewGrid.innerHTML += `
+                        <div class="review-card">
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 40px; height: 40px; background: #e0f2fe; border-radius: 50%; 
+                                            display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    ${review.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div style="font-weight: bold;">${review.name}</div>
+                                    <div style="font-size: 12px; color: #666;">${review.date}</div>
+                                </div>
+                            </div>
+                            <div style="color: #f59e0b; margin-bottom: 10px;">
+                                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                            </div>
+                            <p>${review.text}</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        // Edit product
+        function editProduct(id) {
+            database.ref('products/' + id).once('value', snapshot => {
+                const product = snapshot.val();
+                document.getElementById('productId').value = id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productDescription').value = product.description;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productOldPrice').value = product.oldPrice || '';
+                document.getElementById('productImage').value = product.image;
+                
+                window.scrollTo({ top: uploadSection.offsetTop, behavior: 'smooth' });
+            });
+        }
+        
+        // Delete product
+        function deleteProduct(id) {
+            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+                database.ref('products/' + id).remove()
+                    .then(() => {
+                        showNotification('Товар удален!');
+                        loadAdminProducts();
+                        loadProducts();
+                    });
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('uploadForm').reset();
+            document.getElementById('productId').value = '';
+        }
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.innerHTML = `<i class="fas fa-${isError ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function addToCart(productId) {
+            database.ref('products/' + productId).once('value', snapshot => {
+                const product = snapshot.val();
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({
+                        id: productId,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image,
+                        quantity: 1
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                showNotification('Товар добавлен в корзину!');
+            });
+        }
+        
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartCount = document.getElementById('cartCount');
+            
+            if (count > 0) {
+                cartCount.textContent = count;
+                cartCount.style.display = 'inline-flex';
+            } else {
+                cartCount.style.display = 'none';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadReviews();
+            updateCartCount();
+        });
+        
+        // Make functions available globally
+        window.addToCart = addToCart;
+        window.editProduct = editProduct;
+        window.deleteProduct = deleteProduct;
+    </script>
+</body>
+</html>
