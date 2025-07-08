@@ -706,180 +706,202 @@
     
     <script>
         // Хранение товаров в localStorage
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let isAdmin = false;
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+    // Инициализация Firebase (замените на свои данные)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDv8v0JXz3Xq3q3q3q3q3q3q3q3q3q3q3q",
+        authDomain: "your-project-id.firebaseapp.com",
+        databaseURL: "https://your-project-id.firebaseio.com",
+        projectId: "your-project-id",
+        storageBucket: "your-project-id.appspot.com",
+        messagingSenderId: "123456789012",
+        appId: "1:123456789012:web:abcdef1234567890"
+    };
+    
+    // Инициализируем Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    
+    let products = [];
+    let isAdmin = false;
+    
+    // Хеш пароля (sha256 от "admin123")
+    const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+    
+    // Функция для вычисления хеша SHA-256
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+    
+    // Функция для отображения товаров
+    function displayProducts() {
+        const productGrid = document.getElementById('productGrid');
+        productGrid.innerHTML = '';
         
-        // Хеш пароля (sha256 от "admin123")
-        const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-        
-        // Функция для вычисления хеша SHA-256
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
+        products.forEach((product, index) => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.innerHTML = `
+                ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
+                <div class="product-image" style="background-image: url('${product.image}')"></div>
+                <div class="product-info">
+                    <h3 class="product-title">${product.name}</h3>
+                    <p>${product.description}</p>
+                    <p class="product-price">${product.price} ₽</p>
+                    ${isAdmin ? `<button onclick="deleteProduct('${product.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
+                </div>
+            `;
+            productGrid.appendChild(productCard);
+        });
+    }
+    
+    // Функция для удаления товара
+    function deleteProduct(productId) {
+        if (!isAdmin) {
+            showNotification('Ошибка: Недостаточно прав', true);
+            return;
         }
         
-        // Функция для отображения товаров
-        function displayProducts() {
-            const productGrid = document.getElementById('productGrid');
-            productGrid.innerHTML = '';
+        database.ref('products/' + productId).remove()
+            .then(() => showNotification('Товар удален'))
+            .catch(error => showNotification('Ошибка при удалении: ' + error.message, true));
+    }
+    
+    // Функция для показа уведомления
+    function showNotification(message, isError = false) {
+        const notification = document.getElementById('notification');
+        notification.querySelector('span').textContent = message;
+        notification.className = isError ? 'notification error show' : 'notification show';
+        notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+    
+    // Функция для входа
+    async function login() {
+        const password = document.getElementById('adminPassword').value;
+        const hash = await sha256(password);
+        
+        if (hash === ADMIN_PASSWORD_HASH) {
+            isAdmin = true;
+            localStorage.setItem('isAdmin', 'true');
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('upload').style.display = 'block';
+            document.getElementById('adminLink').textContent = 'Админ';
+            showNotification('Вы успешно вошли как администратор');
+        } else {
+            showNotification('Неверный пароль', true);
+        }
+    }
+    
+    // Функция для выхода
+    function logout() {
+        isAdmin = false;
+        localStorage.removeItem('isAdmin');
+        document.getElementById('upload').style.display = 'none';
+        document.getElementById('adminLink').textContent = 'Вход';
+        showNotification('Вы вышли из системы');
+    }
+    
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Проверяем, авторизован ли пользователь
+        isAdmin = localStorage.getItem('isAdmin') === 'true';
+        
+        if (isAdmin) {
+            document.getElementById('adminLink').textContent = 'Админ';
+        }
+        
+        // Загружаем товары из Firebase
+        database.ref('products').on('value', (snapshot) => {
+            const data = snapshot.val();
+            products = data ? Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            })) : [];
+            displayProducts();
+        });
+        
+        // Обработка формы добавления товара
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            products.forEach((product, index) => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
-                    <div class="product-image" style="background-image: url('${product.image}')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <p>${product.description}</p>
-                        <p class="product-price">${product.price} ₽</p>
-                        ${isAdmin ? `<button onclick="deleteProduct(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
-                    </div>
-                `;
-                productGrid.appendChild(productCard);
-            });
-        }
-        
-        // Функция для удаления товара
-        function deleteProduct(index) {
             if (!isAdmin) {
                 showNotification('Ошибка: Недостаточно прав', true);
                 return;
             }
             
-            products.splice(index, 1);
-            localStorage.setItem('products', JSON.stringify(products));
-            displayProducts();
-            showNotification('Товар удален');
-        }
-        
-        // Функция для показа уведомления
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            notification.querySelector('span').textContent = message;
-            notification.className = isError ? 'notification error show' : 'notification show';
-            notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = document.getElementById('productPrice').value;
+            const imageFile = document.getElementById('productImage').files[0];
             
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Функция для входа
-        async function login() {
-            const password = document.getElementById('adminPassword').value;
-            const hash = await sha256(password);
-            
-            if (hash === ADMIN_PASSWORD_HASH) {
-                isAdmin = true;
-                localStorage.setItem('isAdmin', 'true');
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('upload').style.display = 'block';
-                document.getElementById('adminLink').textContent = 'Админ';
-                displayProducts();
-                showNotification('Вы успешно вошли как администратор');
-            } else {
-                showNotification('Неверный пароль', true);
-            }
-        }
-        
-        // Функция для выхода
-        function logout() {
-            isAdmin = false;
-            localStorage.removeItem('isAdmin');
-            document.getElementById('upload').style.display = 'none';
-            document.getElementById('adminLink').textContent = 'Вход';
-            displayProducts();
-            showNotification('Вы вышли из системы');
-        }
-        
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Проверяем, авторизован ли пользователь
-            isAdmin = localStorage.getItem('isAdmin') === 'true';
-            
-            if (isAdmin) {
-                document.getElementById('adminLink').textContent = 'Админ';
+            if (!imageFile) {
+                showNotification('Пожалуйста, выберите изображение', true);
+                return;
             }
             
-            displayProducts();
-            
-            // Обработка формы добавления товара
-            document.getElementById('uploadForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                if (!isAdmin) {
-                    showNotification('Ошибка: Недостаточно прав', true);
-                    return;
-                }
-                
-                const name = document.getElementById('productName').value;
-                const description = document.getElementById('productDescription').value;
-                const price = document.getElementById('productPrice').value;
-                const imageFile = document.getElementById('productImage').files[0];
-                
-                if (!imageFile) {
-                    showNotification('Пожалуйста, выберите изображение', true);
-                    return;
-                }
-                
-                // Чтение изображения как Data URL
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const newProduct = {
-                        name: name,
-                        description: description,
-                        price: price,
-                        image: e.target.result
-                    };
-                    
-                    // Добавление нового товара
-                    products.push(newProduct);
-                    localStorage.setItem('products', JSON.stringify(products));
-                    
-                    // Обновление отображения
-                    displayProducts();
-                    
-                    // Показ уведомления
-                    showNotification('Товар успешно добавлен');
-                    
-                    // Сброс формы
-                    this.reset();
+            // Чтение изображения как Data URL
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newProduct = {
+                    name: name,
+                    description: description,
+                    price: price,
+                    image: e.target.result
                 };
                 
-                reader.readAsDataURL(imageFile);
-            });
+                // Добавление нового товара в Firebase
+                const newProductRef = database.ref('products').push();
+                newProductRef.set(newProduct)
+                    .then(() => {
+                        showNotification('Товар успешно добавлен');
+                        this.reset();
+                    })
+                    .catch(error => {
+                        showNotification('Ошибка при добавлении: ' + error.message, true);
+                    });
+            };
             
-            // Обработка кнопки входа
-            document.getElementById('adminLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                if (isAdmin) {
-                    document.getElementById('upload').style.display = 'block';
-                } else {
-                    document.getElementById('loginForm').style.display = 'block';
-                }
-            });
-            
-            // Обработка кнопки входа в форму
-            document.getElementById('loginButton').addEventListener('click', login);
-            
-            // Обработка кнопки выхода
-            document.getElementById('logoutButton').addEventListener('click', logout);
-            
-            // Закрытие форм при клике вне их
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
-                    !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
-                    if (!isAdmin) {
-                        document.getElementById('upload').style.display = 'none';
-                    }
-                    document.getElementById('loginForm').style.display = 'none';
-                }
-            });
+            reader.readAsDataURL(imageFile);
         });
+        
+        // Обработка кнопки входа
+        document.getElementById('adminLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isAdmin) {
+                document.getElementById('upload').style.display = 'block';
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+            }
+        });
+        
+        // Обработка кнопки входа в форму
+        document.getElementById('loginButton').addEventListener('click', login);
+        
+        // Обработка кнопки выхода
+        document.getElementById('logoutButton').addEventListener('click', logout);
+        
+        // Закрытие форм при клике вне их
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
+                !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
+                if (!isAdmin) {
+                    document.getElementById('upload').style.display = 'none';
+                }
+                document.getElementById('loginForm').style.display = 'none';
+            }
+        });
+    });
+</script>
     </script>
 </body>
 </html>
