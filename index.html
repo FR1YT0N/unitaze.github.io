@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сантехник - магазин сантехники</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         /* Базовые стили */
         * {
@@ -18,6 +22,12 @@
             line-height: 1.6;
             color: #333;
             background-color: #f8fafc;
+            background-image: url('https://images.unsplash.com/photo-1600585152220-90363fe7e115?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            background-color: rgba(248, 250, 252, 0.9);
         }
         
         .container {
@@ -36,6 +46,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
         .header-content {
@@ -51,6 +62,13 @@
             background: linear-gradient(to right, #ffffff, #e0f2fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         nav ul {
@@ -148,6 +166,43 @@
             animation: fadeInUp 1s ease;
         }
         
+        /* Поиск и фильтры */
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin: 20px auto 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        
         /* Каталог товаров */
         .products {
             padding: 80px 0;
@@ -205,6 +260,18 @@
             position: relative;
         }
         
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ef4444;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
         .product-info {
             padding: 20px;
             flex-grow: 1;
@@ -218,11 +285,24 @@
             color: #1e3a8a;
         }
         
+        .product-description {
+            color: #64748b;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
         .product-price {
             font-weight: bold;
             color: #2563eb;
             font-size: 22px;
             margin-top: 15px;
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            color: #94a3b8;
+            font-size: 16px;
+            margin-left: 10px;
         }
         
         .product-actions {
@@ -273,6 +353,15 @@
             background: #d97706;
         }
         
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
         .admin-badge {
             position: absolute;
             top: 10px;
@@ -283,6 +372,48 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+        }
+        
+        /* Слайдер популярных товаров */
+        .popular-slider {
+            margin: 60px 0;
+            position: relative;
+        }
+        
+        .slider-container {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .slider-item {
+            min-width: 280px;
+            padding: 0 15px;
+        }
+        
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .slider-dot.active {
+            background: #2563eb;
+            transform: scale(1.2);
         }
         
         /* Форма загрузки фотографий */
@@ -333,7 +464,8 @@
         }
         
         .form-group input, 
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             padding: 12px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -342,7 +474,8 @@
         }
         
         .form-group input:focus, 
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
@@ -480,6 +613,67 @@
             color: #334155;
         }
         
+        /* Отзывы */
+        .reviews {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 100%);
+        }
+        
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .review-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e0f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #1e3a8a;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .review-name {
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+        
+        .review-date {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        .review-rating {
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+        
+        .review-text {
+            color: #334155;
+            line-height: 1.6;
+        }
+        
         /* Подвал */
         footer {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
@@ -562,6 +756,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
         
         .modal-content {
@@ -573,6 +768,7 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            animation: fadeInUp 0.3s;
         }
         
         .close-modal {
@@ -582,6 +778,12 @@
             font-size: 24px;
             cursor: pointer;
             color: #64748b;
+            transition: all 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #1e3a8a;
+            transform: rotate(90deg);
         }
         
         /* Корзина */
@@ -622,10 +824,40 @@
             font-weight: bold;
         }
         
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background: #cbd5e1;
+        }
+        
         .cart-item-remove {
             color: #ef4444;
             cursor: pointer;
             margin-left: 15px;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .cart-item-remove:hover {
+            transform: scale(1.2);
         }
         
         .cart-total {
@@ -635,6 +867,31 @@
             text-align: right;
             padding-top: 20px;
             border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Форма заказа */
+        .order-form {
+            margin-top: 20px;
+        }
+        
+        .form-row {
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #1e3a8a;
+        }
+        
+        .form-row input,
+        .form-row textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
         }
         
         /* Анимации */
@@ -733,6 +990,10 @@
             .contact-info {
                 grid-template-columns: 1fr;
             }
+            
+            .search-section {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -745,6 +1006,7 @@
                 <ul>
                     <li><a href="#home">Главная</a></li>
                     <li><a href="#products">Каталог</a></li>
+                    <li><a href="#reviews">Отзывы</a></li>
                     <li><a href="#contacts">Контакты</a></li>
                     <li><a href="#about">О нас</a></li>
                     <li><a href="#" id="cartLink"><i class="fas fa-shopping-cart"></i> <span id="cartCount" class="cart-count" style="display: none;">0</span></a></li>
@@ -762,41 +1024,45 @@
         </div>
     </section>
     
+    <!-- Поиск и фильтры -->
+    <div class="container">
+        <div class="search-section">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск товаров...">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">Все категории</option>
+                <option value="Смесители">Смесители</option>
+                <option value="Унитазы">Унитазы</option>
+                <option value="Ванны">Ванны</option>
+                <option value="Душевые">Душевые</option>
+                <option value="Аксессуары">Аксессуары</option>
+            </select>
+            <select id="priceFilter" class="filter-select">
+                <option value="">Любая цена</option>
+                <option value="0-5000">До 5 000 ₽</option>
+                <option value="5000-15000">5 000 - 15 000 ₽</option>
+                <option value="15000-30000">15 000 - 30 000 ₽</option>
+                <option value="30000">От 30 000 ₽</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Слайдер популярных товаров -->
+    <section class="popular-slider">
+        <div class="container">
+            <h2 class="section-title">Популярные товары</h2>
+            <div class="slider-container">
+                <div class="slider-track" id="sliderTrack"></div>
+            </div>
+            <div class="slider-nav" id="sliderNav"></div>
+        </div>
+    </section>
+    
     <!-- Каталог товаров -->
     <section class="products" id="products">
         <div class="container">
             <h2 class="section-title">Наш каталог</h2>
             <div class="product-grid" id="productGrid">
                 <!-- Товары будут загружаться здесь -->
-                <div class="product-card">
-                    <div class="admin-badge">Админ</div>
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Смеситель для раковины</h3>
-                        <p>Современный дизайн, хромированное покрытие</p>
-                        <p class="product-price">2 499 ₽</p>
-                        <div class="product-actions">
-                            <button class="btn btn-primary" onclick="addToCart(0)">
-                                <i class="fas fa-cart-plus"></i> В корзину
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="admin-badge">Админ</div>
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Унитаз компакт</h3>
-                        <p>Белый, с микролифтом, бачок в комплекте</p>
-                        <p class="product-price">8 990 ₽</p>
-                        <div class="product-actions">
-                            <button class="btn btn-primary" onclick="addToCart(1)">
-                                <i class="fas fa-cart-plus"></i> В корзину
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -813,6 +1079,18 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="productCategory">Категория</label>
+                    <select id="productCategory" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="Смесители">Смесители</option>
+                        <option value="Унитазы">Унитазы</option>
+                        <option value="Ванны">Ванны</option>
+                        <option value="Душевые">Душевые</option>
+                        <option value="Аксессуары">Аксессуары</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <label for="productDescription">Описание товара</label>
                     <textarea id="productDescription" rows="3" required placeholder="Опишите характеристики товара"></textarea>
                 </div>
@@ -823,175 +1101,12 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="productOldPrice">Старая цена (₽, необязательно)</label>
+                    <input type="number" id="productOldPrice" placeholder="Например: 4999">
+                </div>
+                
+                <div class="form-group">
                     <label for="productImage">Фотография товара</label>
                     <input type="file" id="productImage" accept="image/*">
                     <small>Оставьте пустым, чтобы сохранить текущее изображение</small>
-                </div>
-                
-                <button type="submit" class="upload-button" id="submitProductBtn">Добавить товар</button>
-                <button type="button" id="cancelEditBtn" class="upload-button" style="background: linear-gradient(to right, #f59e0b, #d97706); display: none;">Отменить редактирование</button>
-                <button type="button" id="logoutButton" class="upload-button" style="background: linear-gradient(to right, #ef4444, #dc2626);">Выйти</button>
-            </form>
-        </div>
-    </section>
-    
-    <!-- Форма входа -->
-    <div class="login-form" id="loginForm" style="display: none;">
-        <h2>Вход для администратора</h2>
-        <input type="password" id="adminPassword" placeholder="Введите пароль">
-        <button class="login-button" id="loginButton">Войти</button>
-    </div>
-    
-    <!-- Контакты -->
-    <section class="contacts" id="contacts">
-        <div class="container">
-            <h2 class="section-title">Наши контакты</h2>
-            <div class="contact-info">
-                <div class="contact-card">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <h3>Адрес</h3>
-                    <p>г. Москва, ул. Сантехническая, д. 45</p>
-                    <p>Часы работы: Пн-Пт 9:00-20:00, Сб-Вс 10:00-18:00</p>
-                </div>
-                
-                <div class="contact-card">
-                    <i class="fas fa-phone-alt"></i>
-                    <h3>Телефоны</h3>
-                    <p>Менеджер: +7 (495) 123-45-67</p>
-                    <p>Доставка: +7 (495) 765-43-21</p>
-                    <p>Техподдержка: +7 (800) 123-45-67</p>
-                </div>
-                
-                <div class="contact-card">
-                    <i class="fas fa-envelope"></i>
-                    <h3>Email</h3>
-                    <p>Заказы: order@santehmag.ru</p>
-                    <p>Поддержка: support@santehmag.ru</p>
-                    <p>Партнерам: partners@santehmag.ru</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- О компании -->
-    <section class="about" id="about">
-        <div class="container">
-            <h2 class="section-title">О нашей компании</h2>
-            <p>
-                Магазин "Сантехник" работает на рынке с 2023 года. Мы предлагаем только качественную сантехнику от проверенных производителей. 
-                Наши специалисты всегда готовы помочь с выбором и ответить на все ваши вопросы. Мы гарантируем быструю доставку и профессиональную 
-                установку приобретённого оборудования.
-            </p>
-        </div>
-    </section>
-    
-    <!-- Подвал -->
-    <footer>
-        <div class="container footer-content">
-            <p>© 2023 Сантехник. Все права защищены.</p>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-vk"></i></a>
-                <a href="#"><i class="fab fa-telegram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </footer>
-    
-    <!-- Модальное окно корзины -->
-    <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('cartModal')">&times;</span>
-            <h2>Ваша корзина</h2>
-            <div class="cart-items" id="cartItems">
-                <!-- Товары в корзине будут здесь -->
-                <p id="emptyCartMessage">Ваша корзина пуста</p>
-            </div>
-            <div class="cart-total" id="cartTotal" style="display: none;">
-                Итого: <span id="totalAmount">0</span> ₽
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 20px; display: none;" id="checkoutBtn">Оформить заказ</button>
-        </div>
-    </div>
-    
-    <!-- Уведомление -->
-    <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
-        <span>Товар успешно добавлен!</span>
-    </div>
-    
-    <script>
-        // Хранение товаров в localStorage
-        let products = JSON.parse(localStorage.getItem('products')) || [
-            {
-                id: 0,
-                name: "Смеситель для раковины",
-                description: "Современный дизайн, хромированное покрытие",
-                price: "2 499",
-                image: "https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-            },
-            {
-                id: 1,
-                name: "Унитаз компакт",
-                description: "Белый, с микролифтом, бачок в комплекте",
-                price: "8 990",
-                image: "https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-            }
-        ];
-        
-        // Корзина
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let isAdmin = false;
-        let isEditing = false;
-        let currentEditId = null;
-        
-        // Хеш пароля (sha256 от "admin123")
-        const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-        
-        // Функция для вычисления хеша SHA-256
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-        
-        // Функция для отображения товаров
-        function displayProducts() {
-            const productGrid = document.getElementById('productGrid');
-            productGrid.innerHTML = '';
-            
-            products.forEach((product, index) => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
-                    <div class="product-image" style="background-image: url('${product.image}')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <p>${product.description}</p>
-                        <p class="product-price">${product.price} ₽</p>
-                        <div class="product-actions">
-                            <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                <i class="fas fa-cart-plus"></i> В корзину
-                            </button>
-                            ${isAdmin ? `
-                                <button class="btn btn-warning" onclick="editProduct(${product.id})">
-                                    <i class="fas fa-edit"></i> Изменить
-                                </button>
-                                <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
-                                    <i class="fas fa-trash"></i> Удалить
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-                productGrid.appendChild(productCard);
-            });
-            
-            updateCartCount();
-        }
-        
-        // Функция для добавления товара в корзину
-        function addToCart(productId) {
-           
+                </
