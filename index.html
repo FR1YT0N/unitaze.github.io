@@ -5,655 +5,881 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сантехник - магазин сантехники</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        /* Все ваши стили остаются без изменений */
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1e3a8a;
-            --primary-light: #93c5fd;
-            --secondary: #f59e0b;
-            --danger: #ef4444;
-            --success: #10b981;
-            --light: #f8fafc;
-            --dark: #1e293b;
-            --gray: #94a3b8;
-            --light-gray: #e2e8f0;
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
         }
         
-        /* ... (все остальные стили остаются без изменений) ... */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
         
-        /* Дополнительные стили для админки */
-        .admin-badge {
-            background: var(--danger);
+        /* Шапка сайта */
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 5px;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .admin-controls {
-            display: none;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #ffffff, #e0f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 25px;
+            position: relative;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav ul li a:hover {
+            color: #bfdbfe;
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #bfdbfe;
+            transition: width 0.3s;
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        /* Главный баннер */
+        .hero {
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), 
+                        url('https://images.unsplash.com/photo-1600585152220-90363fe7e115?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 120px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 1s ease;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            color: #e0f2fe;
+            animation: fadeInUp 1s ease;
+        }
+        
+        /* Каталог товаров */
+        .products {
+            padding: 80px 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="%23e0f2fe" opacity="0.2" d="M0,0 L100,0 L100,100 Q50,80 0,100"></path></svg>') no-repeat bottom/100% 50px, linear-gradient(to bottom, #ffffff, #f8fafc);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            color: #1e3a8a;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .product-image {
+            height: 220px;
+            background-color: #e2e8f0;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #1e3a8a;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: #2563eb;
+            font-size: 22px;
             margin-top: 15px;
         }
         
-        .admin-mode .admin-controls {
-            display: flex;
-            gap: 10px;
+        .admin-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2563eb;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
         }
         
-        .admin-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--danger);
+        /* Форма загрузки фотографий */
+        .upload-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin: 60px auto;
+            max-width: 600px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, #2563eb, #1e3a8a);
+        }
+        
+        .upload-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+            font-size: 24px;
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #1e3a8a;
+        }
+        
+        .form-group input, 
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        .upload-button {
+            background: linear-gradient(to right, #2563eb, #1e40af);
             color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .upload-button:hover {
+            background: linear-gradient(to right, #1e40af, #1e3a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Форма входа */
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin: 60px auto;
+            max-width: 400px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .login-form h2 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .login-button {
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .login-button:hover {
+            background: linear-gradient(to right, #1e40af, #1e3a8a);
+            transform: translateY(-2px);
+        }
+        
+        /* Контакты */
+        .contacts {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .contact-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-card i {
+            font-size: 40px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+        
+        .contact-card h3 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-size: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .contact-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: #2563eb;
+        }
+        
+        /* О компании */
+        .about {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .about p {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #334155;
+        }
+        
+        /* Подвал */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+            clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-content p {
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
         }
         
-        .admin-toggle:hover {
-            transform: scale(1.1);
+        .social-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        /* Анимации */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            nav ul li {
+                margin: 0;
+            }
+            
+            .hero {
+                padding: 80px 0;
+                clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .contacts {
+                clip-path: polygon(0 0, 100% 3%, 100% 100%, 0 97%);
+            }
+            
+            footer {
+                clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header id="header">
+    <!-- Шапка сайта -->
+    <header>
         <div class="container header-content">
-            <div class="logo">
-                <i class="fas fa-faucet"></i>
-                Сантехник
-            </div>
+            <div class="logo">Сантехник</div>
             <nav>
                 <ul>
-                    <li><a href="#home"><i class="fas fa-home"></i> Главная</a></li>
-                    <li><a href="#products"><i class="fas fa-list"></i> Каталог</a></li>
-                    <li><a href="#reviews"><i class="fas fa-star"></i> Отзывы</a></li>
-                    <li><a href="#contacts"><i class="fas fa-phone"></i> Контакты</a></li>
-                    <li><a href="#about"><i class="fas fa-info-circle"></i> О нас</a></li>
-                    <li>
-                        <a href="#" id="cartLink">
-                            <i class="fas fa-shopping-cart"></i> 
-                            <span id="cartCount" class="cart-count" style="display: none;">0</span>
-                        </a>
-                    </li>
-                    <li><a href="#" id="adminLink"><i class="fas fa-user-shield"></i> <span id="loginText">Вход</span></a></li>
+                    <li><a href="#home">Главная</a></li>
+                    <li><a href="#products">Каталог</a></li>
+                    <li><a href="#contacts">Контакты</a></li>
+                    <li><a href="#about">О нас</a></li>
+                    <li><a href="#" id="adminLink">Вход</a></li>
                 </ul>
             </nav>
         </div>
     </header>
     
-    <!-- Модальное окно входа -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Вход для администратора</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Логин</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Пароль</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-sign-in-alt"></i> Войти
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Hero -->
+    <!-- Главный баннер -->
     <section class="hero" id="home">
-        <div class="container hero-content">
-            <h1 class="animate__animated animate__fadeInDown">"Сантехник"</h1>
-            <p class="animate__animated animate__fadeInUp">Широкий ассортимент сантехники по доступным ценам с быстрой доставкой</p>
-            <a href="#products" class="hero-btn animate__animated animate__fadeIn">Перейти в каталог</a>
+        <div class="container">
+            <h1>"Сантехник"</h1>
+            <p>Широкий ассортимент сантехники по доступным ценам с быстрой доставкой</p>
         </div>
     </section>
     
-    <!-- Products -->
+    <!-- Каталог товаров -->
     <section class="products" id="products">
         <div class="container">
-            <h2 class="section-title animate__animated animate__fadeIn">Наш каталог</h2>
-            <div class="product-grid" id="productGrid"></div>
-        </div>
-    </section>
-    
-    <!-- Reviews -->
-    <section class="reviews" id="reviews">
-        <div class="container">
-            <h2 class="section-title animate__animated animate__fadeIn">Отзывы наших клиентов</h2>
-            <div class="review-grid" id="reviewGrid"></div>
-            <div style="margin-top: 50px; text-align: center;">
-                <button id="addReviewBtn" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Добавить отзыв
-                </button>
-            </div>
-        </div>
-    </section>
-    
-    <!-- About -->
-    <section class="about" id="about">
-        <div class="container">
-            <h2 class="section-title animate__animated animate__fadeIn">О нас</h2>
-            <div class="about-content animate__animated animate__fadeIn">
-                <p>Мы - магазин "Сантехник", работаем на рынке с 2010 года. Наша компания предлагает широкий ассортимент сантехнического оборудования от ведущих производителей по доступным ценам. Мы гарантируем качество продукции и профессиональное обслуживание.</p>
-                <p>Наш коллектив состоит из опытных специалистов, которые всегда готовы помочь вам с выбором и ответить на все вопросы. Мы ценим каждого клиента и стремимся к долгосрочному сотрудничеству.</p>
-            </div>
-            
-            <div class="about-stats">
-                <div class="stat-card animate__animated animate__fadeInUp">
-                    <div class="stat-number">12+</div>
-                    <div class="stat-label">Лет на рынке</div>
-                </div>
-                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-                    <div class="stat-number">5000+</div>
-                    <div class="stat-label">Довольных клиентов</div>
-                </div>
-                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
-                    <div class="stat-number">100+</div>
-                    <div class="stat-label">Брендов</div>
-                </div>
-                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Поддержка</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Contacts -->
-    <section class="contacts" id="contacts">
-        <div class="container">
-            <h2 class="section-title animate__animated animate__fadeIn">Контакты</h2>
-            <div class="contact-info">
-                <div class="contact-card animate__animated animate__fadeIn" style="animation-delay: 0.1s;">
-                    <i class="fas fa-map-marker-alt floating" style="animation-delay: 0.3s;"></i>
-                    <h3>Адрес</h3>
-                    <p>г. Москва, ул. Примерная, д. 123</p>
-                </div>
-                <div class="contact-card animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
-                    <i class="fas fa-phone floating" style="animation-delay: 0.4s;"></i>
-                    <h3>Телефон</h3>
-                    <p>+7 (123) 456-78-90</p>
-                </div>
-                <div class="contact-card animate__animated animate__fadeIn" style="animation-delay: 0.3s;">
-                    <i class="fas fa-envelope floating" style="animation-delay: 0.5s;"></i>
-                    <h3>Email</h3>
-                    <p>info@santehnik.ru</p>
-                </div>
-                <div class="contact-card animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
-                    <i class="fas fa-clock floating" style="animation-delay: 0.6s;"></i>
-                    <h3>Часы работы</h3>
-                    <p>Пн-Пт: 9:00 - 20:00<br>Сб-Вс: 10:00 - 18:00</p>
-                </div>
-            </div>
-            
-            <div class="contact-form animate__animated animate__fadeIn">
-                <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary-dark);">Остались вопросы?</h3>
-                <form id="contactForm">
-                    <div class="form-group">
-                        <label for="contactName">Ваше имя</label>
-                        <input type="text" id="contactName" required>
+            <h2 class="section-title">Наш каталог</h2>
+            <div class="product-grid" id="productGrid">
+                <!-- Товары будут загружаться здесь -->
+                <div class="product-card">
+                    <div class="admin-badge">Админ</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1600077106724-9465ee3976e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
+                    <div class="product-info">
+                        <h3 class="product-title">Смеситель для раковины</h3>
+                        <p>Современный дизайн, хромированное покрытие</p>
+                        <p class="product-price">2 499 ₽</p>
                     </div>
-                    <div class="form-group">
-                        <label for="contactEmail">Ваш Email</label>
-                        <input type="email" id="contactEmail" required>
+                </div>
+                
+                <div class="product-card">
+                    <div class="admin-badge">Админ</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1582325545876-a6c34774a0a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
+                    <div class="product-info">
+                        <h3 class="product-title">Унитаз компакт</h3>
+                        <p>Белый, с микролифтом, бачок в комплекте</p>
+                        <p class="product-price">8 990 ₽</p>
                     </div>
-                    <div class="form-group">
-                        <label for="contactMessage">Ваше сообщение</label>
-                        <textarea id="contactMessage" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-paper-plane"></i> Отправить
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </section>
     
-    <!-- Admin Panel (hidden by default) -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2>Панель администратора</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <button id="logoutBtn" class="btn btn-danger">
-                    <i class="fas fa-sign-out-alt"></i> Выйти
-                </button>
-                <button id="addProductBtn" class="btn btn-primary" style="margin-left: 10px;">
-                    <i class="fas fa-plus"></i> Добавить товар
-                </button>
-            </div>
-            
-            <form id="uploadForm" style="display: none;">
-                <input type="hidden" id="productId">
+    <!-- Форма загрузки фотографий (скрыта по умолчанию) -->
+    <section class="upload-section" id="upload" style="display: none;">
+        <div class="container">
+            <h2 class="upload-title">Панель администратора</h2>
+            <form id="uploadForm" class="upload-form">
                 <div class="form-group">
                     <label for="productName">Название товара</label>
-                    <input type="text" id="productName" required>
+                    <input type="text" id="productName" required placeholder="Например: Смеситель для ванны">
                 </div>
+                
                 <div class="form-group">
-                    <label for="productCategory">Категория</label>
-                    <select id="productCategory" required>
-                        <option value="Смесители">Смесители</option>
-                        <option value="Унитазы">Унитазы</option>
-                        <option value="Ванны">Ванны</option>
-                        <option value="Душевые">Душевые</option>
-                        <option value="Аксессуары">Аксессуары</option>
-                    </select>
+                    <label for="productDescription">Описание товара</label>
+                    <textarea id="productDescription" rows="3" required placeholder="Опишите характеристики товара"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="productDescription">Описание</label>
-                    <textarea id="productDescription" required></textarea>
-                </div>
+                
                 <div class="form-group">
                     <label for="productPrice">Цена (₽)</label>
-                    <input type="number" id="productPrice" required>
+                    <input type="number" id="productPrice" required placeholder="Например: 3499">
                 </div>
+                
                 <div class="form-group">
-                    <label for="productOldPrice">Старая цена (₽)</label>
-                    <input type="number" id="productOldPrice">
+                    <label for="productImage">Фотография товара</label>
+                    <input type="file" id="productImage" accept="image/*" required>
                 </div>
-                <div class="form-group">
-                    <label for="productImage">Изображение (URL)</label>
-                    <input type="text" id="productImage" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Сохранить
-                    </button>
-                    <button type="button" id="cancelEditBtn" class="btn btn-outline" style="margin-left: 10px;">
-                        Отмена
-                    </button>
-                </div>
+                
+                <button type="submit" class="upload-button">Добавить товар</button>
+                <button type="button" id="logoutButton" class="upload-button" style="background: linear-gradient(to right, #ef4444, #dc2626);">Выйти</button>
             </form>
-            
-            <div>
-                <h3>Управление товарами</h3>
-                <div id="adminProductsList" class="product-grid"></div>
-            </div>
         </div>
+    </section>
+    
+    <!-- Форма входа -->
+    <div class="login-form" id="loginForm" style="display: none;">
+        <h2>Вход для администратора</h2>
+        <input type="password" id="adminPassword" placeholder="Введите пароль">
+        <button class="login-button" id="loginButton">Войти</button>
     </div>
     
-    <!-- Кнопка переключения админ-режима -->
-    <div class="admin-toggle" id="adminToggle" style="display: none;">
-        <i class="fas fa-user-shield"></i>
-    </div>
-
-    <script>
-        // Конфигурация Firebase (замените на свою)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
-            authDomain: "your-project-id.firebaseapp.com",
-            databaseURL: "https://your-project-id.firebaseio.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef1234567890"
-        };
-        
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
-        // Данные администратора
-        const ADMIN_CREDENTIALS = {
-            login: "admin",
-            password: "24844812"
-        };
-        
-        // DOM элементы
-        const loginModal = document.getElementById('loginModal');
-        const adminModal = document.getElementById('adminModal');
-        const loginForm = document.getElementById('loginForm');
-        const adminLink = document.getElementById('adminLink');
-        const loginText = document.getElementById('loginText');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const adminToggle = document.getElementById('adminToggle');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-        const uploadForm = document.getElementById('uploadForm');
-        const addProductBtn = document.getElementById('addProductBtn');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const productGrid = document.getElementById('productGrid');
-        const adminProductsList = document.getElementById('adminProductsList');
-        
-        // Состояние приложения
-        let isAdmin = false;
-        let isAdminMode = false;
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            loadProducts();
-            setupEventListeners();
-        });
-        
-        function setupEventListeners() {
-            // Обработчики входа/выхода
-            adminLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!isAdmin) {
-                    showModal(loginModal);
-                } else {
-                    showModal(adminModal);
-                }
-            });
-            
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+    <!-- Контакты -->
+    <section class="contacts" id="contacts">
+        <div class="container">
+            <h2 class="section-title">Наши контакты</h2>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Адрес</h3>
+                    <p>г. Москва, ул. Сантехническая, д. 45</p>
+                    <p>Часы работы: Пн-Пт 9:00-20:00, Сб-Вс 10:00-18:00</p>
+                </div>
                 
-                if (username === ADMIN_CREDENTIALS.login && password === ADMIN_CREDENTIALS.password) {
-                    isAdmin = true;
-                    loginText.textContent = 'Admin';
-                    document.getElementById('header').classList.add('admin');
-                    adminToggle.style.display = 'flex';
-                    hideModal(loginModal);
-                    showNotification('Вы вошли как администратор', 'success');
-                } else {
-                    showNotification('Неверные логин или пароль', 'error');
-                }
-            });
+                <div class="contact-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <h3>Телефоны</h3>
+                    <p>Менеджер: +7 (495) 123-45-67</p>
+                    <p>Доставка: +7 (495) 765-43-21</p>
+                    <p>Техподдержка: +7 (800) 123-45-67</p>
+                </div>
+                
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>Заказы: order@santehmag.ru</p>
+                    <p>Поддержка: support@santehmag.ru</p>
+                    <p>Партнерам: partners@santehmag.ru</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- О компании -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">О нашей компании</h2>
+            <p>
+                Магазин "Сантехник" работает на рынке с 2023 года. Мы предлагаем только качественную сантехнику от проверенных производителей. 
+                Наши специалисты всегда готовы помочь с выбором и ответить на все ваши вопросы. Мы гарантируем быструю доставку и профессиональную 
+                установку приобретённого оборудования.
+            </p>
+        </div>
+    </section>
+    
+    <!-- Подвал -->
+    <footer>
+        <div class="container footer-content">
+            <p>© 2023 Сантехник. Все права защищены.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-vk"></i></a>
+                <a href="#"><i class="fab fa-telegram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Уведомление -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Товар успешно добавлен!</span>
+    </div>
+    
+    <script>
+        // Хранение товаров в localStorage
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let isAdmin = false;
+        
+        // Хеш пароля (sha256 от "admin123")
+        const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        
+        // Функция для вычисления хеша SHA-256
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+        
+        // Функция для отображения товаров
+        function displayProducts() {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = '';
             
-            logoutBtn.addEventListener('click', function() {
-                isAdmin = false;
-                isAdminMode = false;
-                loginText.textContent = 'Вход';
-                document.body.classList.remove('admin-mode');
-                document.getElementById('header').classList.remove('admin');
-                adminToggle.style.display = 'none';
-                hideModal(adminModal);
-                showNotification('Вы вышли из системы', 'success');
-            });
-            
-            // Обработчики модальных окон
-            closeModalButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const modal = this.closest('.modal');
-                    hideModal(modal);
-                });
-            });
-            
-            window.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal')) {
-                    hideModal(e.target);
-                }
-            });
-            
-            // Обработчики админ-панели
-            adminToggle.addEventListener('click', function() {
-                isAdminMode = !isAdminMode;
-                document.body.classList.toggle('admin-mode', isAdminMode);
-                showNotification(isAdminMode ? 'Режим администратора включен' : 'Режим администратора выключен', 'success');
-            });
-            
-            addProductBtn.addEventListener('click', function() {
-                uploadForm.style.display = 'block';
-                uploadForm.reset();
-                document.getElementById('productId').value = '';
-                uploadForm.scrollIntoView({ behavior: 'smooth' });
-            });
-            
-            cancelEditBtn.addEventListener('click', function() {
-                uploadForm.style.display = 'none';
-                uploadForm.reset();
-            });
-            
-            uploadForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveProduct();
+            products.forEach((product, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    ${isAdmin ? '<div class="admin-badge">Админ</div>' : ''}
+                    <div class="product-image" style="background-image: url('${product.image}')"></div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p>${product.description}</p>
+                        <p class="product-price">${product.price} ₽</p>
+                        ${isAdmin ? `<button onclick="deleteProduct(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-top: 10px; cursor: pointer;">Удалить</button>` : ''}
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
             });
         }
         
-        function checkAuth() {
-            // В реальном приложении здесь должна быть проверка аутентификации
-            // Для демо просто проверяем, есть ли флаг в localStorage
-            if (localStorage.getItem('isAdmin') === 'true') {
-                isAdmin = true;
-                loginText.textContent = 'Admin';
-                document.getElementById('header').classList.add('admin');
-                adminToggle.style.display = 'flex';
+        // Функция для удаления товара
+        function deleteProduct(index) {
+            if (!isAdmin) {
+                showNotification('Ошибка: Недостаточно прав', true);
+                return;
             }
-        }
-        
-        function showModal(modal) {
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
-        }
-        
-        function hideModal(modal) {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-        
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                ${message}
-            `;
-            document.body.appendChild(notification);
             
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
+            products.splice(index, 1);
+            localStorage.setItem('products', JSON.stringify(products));
+            displayProducts();
+            showNotification('Товар удален');
+        }
+        
+        // Функция для показа уведомления
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.querySelector('span').textContent = message;
+            notification.className = isError ? 'notification error show' : 'notification show';
+            notification.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
             
             setTimeout(() => {
                 notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
             }, 3000);
         }
         
-        function loadProducts() {
-            const productsRef = database.ref('products');
-            productsRef.on('value', (snapshot) => {
-                const products = snapshot.val();
-                productGrid.innerHTML = '';
-                adminProductsList.innerHTML = '';
-                
-                if (products) {
-                    Object.keys(products).forEach(key => {
-                        const product = products[key];
-                        renderProduct(product, key, productGrid);
-                        renderAdminProduct(product, key, adminProductsList);
-                    });
-                } else {
-                    productGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Товары не найдены</p>';
-                }
-            });
-        }
-        
-        function renderProduct(product, id, container) {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card animate__animated animate__fadeIn';
-            productCard.innerHTML = `
-                ${product.oldPrice ? `<div class="discount-badge">-${Math.round((1 - product.price / product.oldPrice) * 100)}%</div>` : ''}
-                <div class="product-image" style="background-image: url('${product.image || 'https://via.placeholder.com/300'}')"></div>
-                <div class="product-info">
-                    <span class="product-category">${product.category}</span>
-                    <h3 class="product-title">${product.name}</h3>
-                    <p class="product-description">${product.description}</p>
-                    <div class="product-price">${product.price} ₽
-                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice} ₽</span>` : ''}
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-primary add-to-cart" data-id="${id}">
-                            <i class="fas fa-cart-plus"></i> В корзину
-                        </button>
-                        <div class="admin-controls">
-                            <button class="btn btn-secondary edit-product" data-id="${id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger delete-product" data-id="${id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(productCard);
+        // Функция для входа
+        async function login() {
+            const password = document.getElementById('adminPassword').value;
+            const hash = await sha256(password);
             
-            // Добавляем обработчики для админ-кнопок
-            if (isAdmin) {
-                const editBtn = productCard.querySelector('.edit-product');
-                const deleteBtn = productCard.querySelector('.delete-product');
-                
-                editBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    editProduct(id);
-                });
-                
-                deleteBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                        deleteProduct(id);
-                    }
-                });
-            }
-        }
-        
-        function renderAdminProduct(product, id, container) {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.innerHTML = `
-                <div class="product-image" style="background-image: url('${product.image || 'https://via.placeholder.com/300'}')"></div>
-                <div class="product-info">
-                    <span class="product-category">${product.category}</span>
-                    <h3 class="product-title">${product.name}</h3>
-                    <div class="product-price">${product.price} ₽</div>
-                    <div class="product-actions">
-                        <button class="btn btn-primary edit-product" data-id="${id}">
-                            <i class="fas fa-edit"></i> Редактировать
-                        </button>
-                        <button class="btn btn-danger delete-product" data-id="${id}">
-                            <i class="fas fa-trash"></i> Удалить
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(productCard);
-            
-            // Добавляем обработчики для админ-кнопок
-            const editBtn = productCard.querySelector('.edit-product');
-            const deleteBtn = productCard.querySelector('.delete-product');
-            
-            editBtn.addEventListener('click', function() {
-                editProduct(id);
-            });
-            
-            deleteBtn.addEventListener('click', function() {
-                if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                    deleteProduct(id);
-                }
-            });
-        }
-        
-        function editProduct(productId) {
-            const productsRef = database.ref('products/' + productId);
-            productsRef.once('value').then(snapshot => {
-                const product = snapshot.val();
-                document.getElementById('productId').value = productId;
-                document.getElementById('productName').value = product.name;
-                document.getElementById('productCategory').value = product.category;
-                document.getElementById('productDescription').value = product.description;
-                document.getElementById('productPrice').value = product.price;
-                document.getElementById('productOldPrice').value = product.oldPrice || '';
-                document.getElementById('productImage').value = product.image || '';
-                
-                uploadForm.style.display = 'block';
-                uploadForm.scrollIntoView({ behavior: 'smooth' });
-            });
-        }
-        
-        function saveProduct() {
-            const productId = document.getElementById('productId').value;
-            const productData = {
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                description: document.getElementById('productDescription').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                image: document.getElementById('productImage').value,
-                date: new Date().toISOString()
-            };
-            
-            const oldPrice = parseFloat(document.getElementById('productOldPrice').value);
-            if (oldPrice && !isNaN(oldPrice)) {
-                productData.oldPrice = oldPrice;
-            }
-            
-            if (productId) {
-                // Редактирование существующего товара
-                database.ref('products/' + productId).update(productData)
-                    .then(() => {
-                        showNotification('Товар успешно обновлен', 'success');
-                        uploadForm.reset();
-                        uploadForm.style.display = 'none';
-                    })
-                    .catch(error => {
-                        showNotification('Ошибка при обновлении товара: ' + error.message, 'error');
-                    });
+            if (hash === ADMIN_PASSWORD_HASH) {
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('upload').style.display = 'block';
+                document.getElementById('adminLink').textContent = 'Админ';
+                displayProducts();
+                showNotification('Вы успешно вошли как администратор');
             } else {
-                // Добавление нового товара
-                database.ref('products').push(productData)
-                    .then(() => {
-                        showNotification('Товар успешно добавлен', 'success');
-                        uploadForm.reset();
-                        uploadForm.style.display = 'none';
-                    })
-                    .catch(error => {
-                        showNotification('Ошибка при добавлении товара: ' + error.message, 'error');
-                    });
+                showNotification('Неверный пароль', true);
             }
         }
         
-        function deleteProduct(productId) {
-            database.ref('products/' + productId).remove()
-                .then(() => {
-                    showNotification('Товар успешно удален', 'success');
-                })
-                .catch(error => {
-                    showNotification('Ошибка при удалении товара: ' + error.message, 'error');
-                });
+        // Функция для выхода
+        function logout() {
+            isAdmin = false;
+            localStorage.removeItem('isAdmin');
+            document.getElementById('upload').style.display = 'none';
+            document.getElementById('adminLink').textContent = 'Вход';
+            displayProducts();
+            showNotification('Вы вышли из системы');
         }
         
-        // Остальной функционал (корзина, отзывы и т.д.)
-        // ... (ваш существующий код)
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Проверяем, авторизован ли пользователь
+            isAdmin = localStorage.getItem('isAdmin') === 'true';
+            
+            if (isAdmin) {
+                document.getElementById('adminLink').textContent = 'Админ';
+            }
+            
+            displayProducts();
+            
+            // Обработка формы добавления товара
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!isAdmin) {
+                    showNotification('Ошибка: Недостаточно прав', true);
+                    return;
+                }
+                
+                const name = document.getElementById('productName').value;
+                const description = document.getElementById('productDescription').value;
+                const price = document.getElementById('productPrice').value;
+                const imageFile = document.getElementById('productImage').files[0];
+                
+                if (!imageFile) {
+                    showNotification('Пожалуйста, выберите изображение', true);
+                    return;
+                }
+                
+                // Чтение изображения как Data URL
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newProduct = {
+                        name: name,
+                        description: description,
+                        price: price,
+                        image: e.target.result
+                    };
+                    
+                    // Добавление нового товара
+                    products.push(newProduct);
+                    localStorage.setItem('products', JSON.stringify(products));
+                    
+                    // Обновление отображения
+                    displayProducts();
+                    
+                    // Показ уведомления
+                    showNotification('Товар успешно добавлен');
+                    
+                    // Сброс формы
+                    this.reset();
+                };
+                
+                reader.readAsDataURL(imageFile);
+            });
+            
+            // Обработка кнопки входа
+            document.getElementById('adminLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isAdmin) {
+                    document.getElementById('upload').style.display = 'block';
+                } else {
+                    document.getElementById('loginForm').style.display = 'block';
+                }
+            });
+            
+            // Обработка кнопки входа в форму
+            document.getElementById('loginButton').addEventListener('click', login);
+            
+            // Обработка кнопки выхода
+            document.getElementById('logoutButton').addEventListener('click', logout);
+            
+            // Закрытие форм при клике вне их
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#upload') && !e.target.closest('#adminLink') && 
+                    !e.target.closest('#loginForm') && e.target.id !== 'adminLink') {
+                    if (!isAdmin) {
+                        document.getElementById('upload').style.display = 'none';
+                    }
+                    document.getElementById('loginForm').style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
